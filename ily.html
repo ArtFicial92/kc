@@ -15,24 +15,27 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      height: 100vh;
+      min-height: 100vh;
       overflow: hidden;
     }
 
     .container {
       background-color: white;
-      padding: 30px 50px;
+      padding: 5vw;
       border-radius: 25px;
       box-shadow: 0 15px 30px rgba(255, 105, 180, 0.3);
       text-align: center;
       animation: fadeIn 1.5s ease-in-out;
       position: relative;
       z-index: 10;
+      width: 90%;
+      max-width: 400px;
     }
 
     .picture img {
-      width: 200px;
-      height: 200px;
+      width: 60%;
+      max-width: 200px;
+      height: auto;
       border-radius: 20px;
       object-fit: cover;
       margin-bottom: 20px;
@@ -41,7 +44,7 @@
     }
 
     h1 {
-      font-size: 2.2rem;
+      font-size: 1.8rem;
       color: #ff4d6d;
       margin-bottom: 30px;
       animation: bounce 2s infinite;
@@ -52,25 +55,26 @@
       justify-content: center;
       align-items: center;
       margin-top: 20px;
-      position: relative;
+      flex-wrap: wrap;
     }
 
     .buttons-inner {
       display: flex;
       justify-content: center;
       align-items: center;
-      gap: 40px;
+      gap: 20px;
+      flex-wrap: wrap;
       position: relative;
     }
 
     .buttons-inner button {
-      font-size: 1.4rem;
-      width: 150px;
-      height: 50px;
+      font-size: 1rem;
+      padding: 12px 24px;
       border: none;
       border-radius: 25px;
       cursor: pointer;
       transition: all 0.3s ease;
+      min-width: 100px;
     }
 
     .yes {
@@ -91,7 +95,6 @@
       position: relative;
     }
 
-    /* Cute shaking animation */
     .shake {
       animation: shake 0.3s infinite;
     }
@@ -107,12 +110,11 @@
     .message {
       display: none;
       margin-top: 25px;
-      font-size: 1.8rem;
+      font-size: 1.5rem;
       color: #e84393;
       animation: heartPop 0.6s ease forwards;
     }
 
-    /* Emoji heart floating */
     .heart-emoji {
       position: absolute;
       font-size: 2rem;
@@ -139,6 +141,26 @@
     @keyframes heartPop {
       0% { transform: scale(0); opacity: 0; }
       100% { transform: scale(1); opacity: 1; }
+    }
+
+    @media (max-width: 400px) {
+      h1 {
+        font-size: 1.4rem;
+      }
+
+      .buttons-inner {
+        flex-direction: column;
+        gap: 15px;
+      }
+
+      .buttons-inner button {
+        width: 100%;
+        font-size: 1rem;
+      }
+
+      .picture img {
+        width: 80%;
+      }
     }
   </style>
 </head>
@@ -186,7 +208,7 @@
   }
 
   function returnToInitial() {
-    noBtn.style.transition = "all 0.2s ease"; // Faster return
+    noBtn.style.transition = "all 0.2s ease";
     noBtn.style.position = "relative";
     noBtn.style.left = "0px";
     noBtn.style.top = "0px";
@@ -212,7 +234,7 @@
       timeout = setTimeout(() => {
         chasing = false;
         returnToInitial();
-      }, 300); // Return faster after 0.3s
+      }, 300);
     }
   });
 
@@ -223,6 +245,11 @@
     message.style.display = 'block';
     pianoSound.play();
     image.src = "2.png";
+
+    noBtn.style.transition = "all 0.5s ease";
+    noBtn.style.opacity = "0";
+    noBtn.style.transform = "scale(0)";
+    setTimeout(() => noBtn.style.display = "none", 500);
 
     if (!heartInterval) {
       heartInterval = setInterval(createHeart, 500);
@@ -238,26 +265,7 @@
     document.body.appendChild(heart);
     setTimeout(() => heart.remove(), 5000);
   }
-
-  yesBtn.addEventListener('click', () => {
-  message.style.display = 'block';
-  pianoSound.play();
-  image.src = "2.png";
-
-  // Make the No button vanish smoothly
-  noBtn.style.transition = "all 0.5s ease";
-  noBtn.style.opacity = "0";
-  noBtn.style.transform = "scale(0)";
-  setTimeout(() => noBtn.style.display = "none", 500); // fully remove after animation
-
-  // Start continuous floating hearts
-  if (!heartInterval) {
-    heartInterval = setInterval(createHeart, 500);
-  }
-});
-
 </script>
-
 
 </body>
 </html>

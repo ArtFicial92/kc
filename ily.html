@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Do You Love Me?</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(135deg, #ffe0ec, #ffcde5);
+      font-family: 'Comic Sans MS', cursive, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    .container {
+      background-color: white;
+      padding: 30px 50px;
+      border-radius: 25px;
+      box-shadow: 0 15px 30px rgba(255, 105, 180, 0.3);
+      text-align: center;
+      animation: fadeIn 1.5s ease-in-out;
+      position: relative;
+      z-index: 10;
+    }
+
+    .picture img {
+      width: 200px;
+      height: 200px;
+      border-radius: 20px;
+      object-fit: cover;
+      margin-bottom: 20px;
+      transition: all 0.5s ease;
+      box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+    }
+
+    h1 {
+      font-size: 2.2rem;
+      color: #ff4d6d;
+      margin-bottom: 30px;
+      animation: bounce 2s infinite;
+    }
+
+    .buttons-wrapper {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-top: 20px;
+      position: relative;
+    }
+
+    .buttons-inner {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 40px;
+      position: relative;
+    }
+
+    .buttons-inner button {
+      font-size: 1.4rem;
+      width: 150px;
+      height: 50px;
+      border: none;
+      border-radius: 25px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .yes {
+      background-color: #ff85a2;
+      color: white;
+      box-shadow: 0 5px 15px rgba(255, 105, 180, 0.4);
+    }
+
+    .yes:hover {
+      background-color: #ff5c8a;
+      transform: scale(1.05);
+    }
+
+    .no {
+      background-color: #ffe0ec;
+      color: #ff4d6d;
+      box-shadow: 0 5px 15px rgba(255, 192, 203, 0.4);
+      position: relative;
+    }
+
+    /* Cute shaking animation */
+    .shake {
+      animation: shake 0.3s infinite;
+    }
+
+    @keyframes shake {
+      0% { transform: translateX(0); }
+      25% { transform: translateX(-3px) rotate(-3deg); }
+      50% { transform: translateX(3px) rotate(3deg); }
+      75% { transform: translateX(-3px) rotate(-3deg); }
+      100% { transform: translateX(0); }
+    }
+
+    .message {
+      display: none;
+      margin-top: 25px;
+      font-size: 1.8rem;
+      color: #e84393;
+      animation: heartPop 0.6s ease forwards;
+    }
+
+    /* Emoji heart floating */
+    .heart-emoji {
+      position: absolute;
+      font-size: 2rem;
+      animation: floatUp 5s linear forwards;
+      opacity: 0.8;
+      pointer-events: none;
+    }
+
+    @keyframes floatUp {
+      0% { transform: translateY(0) scale(1); opacity: 1; }
+      100% { transform: translateY(-500px) scale(1.5); opacity: 0; }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+
+    @keyframes heartPop {
+      0% { transform: scale(0); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container" id="container">
+    <div class="picture">
+      <img id="switchImage" src="before.jpg" alt="Cute Pic">
+    </div>
+    <h1>Do you love me? 🥺</h1>
+    <div class="buttons-wrapper">
+      <div class="buttons-inner" id="buttonsInner">
+        <button class="yes" id="yesBtn">Yes 💖</button>
+        <button class="no" id="noBtn">No 🙈</button>
+      </div>
+    </div>
+    <div class="message">I love you too 💕</div>
+  </div>
+
+  <audio id="piano" src="blue-piano.mp3"></audio>
+
+<script>
+  const noBtn = document.getElementById('noBtn');
+  const yesBtn = document.getElementById('yesBtn');
+  const message = document.querySelector('.message');
+  const pianoSound = document.getElementById('piano');
+  const image = document.getElementById('switchImage');
+  const container = document.getElementById('container');
+
+  let chasing = false;
+  let timeout = null;
+  let heartInterval = null;
+
+  function moveNoButton() {
+    const btnWidth = noBtn.offsetWidth;
+    const btnHeight = noBtn.offsetHeight;
+    const maxX = container.clientWidth - btnWidth;
+    const maxY = container.clientHeight - btnHeight;
+
+    noBtn.classList.remove("shake");
+    noBtn.style.position = "absolute";
+    noBtn.style.transition = "left 0.15s linear, top 0.15s linear";
+    noBtn.style.left = Math.random() * maxX + "px";
+    noBtn.style.top = Math.random() * maxY + "px";
+  }
+
+  function returnToInitial() {
+    noBtn.style.transition = "all 0.2s ease"; // Faster return
+    noBtn.style.position = "relative";
+    noBtn.style.left = "0px";
+    noBtn.style.top = "0px";
+    noBtn.classList.remove("shake");
+  }
+
+  document.addEventListener('mousemove', (e) => {
+    const rect = noBtn.getBoundingClientRect();
+    const mouseX = e.clientX;
+    const mouseY = e.clientY;
+    const buttonX = rect.left + rect.width / 2;
+    const buttonY = rect.top + rect.height / 2;
+
+    const distance = Math.hypot(buttonX - mouseX, buttonY - mouseY);
+
+    if (distance < 150) {
+      chasing = true;
+      noBtn.classList.add("shake");
+      setTimeout(() => { if (chasing) moveNoButton(); }, 200);
+      if (timeout) clearTimeout(timeout);
+    } else if (chasing) {
+      clearTimeout(timeout);
+      timeout = setTimeout(() => {
+        chasing = false;
+        returnToInitial();
+      }, 300); // Return faster after 0.3s
+    }
+  });
+
+  noBtn.addEventListener('mouseover', moveNoButton);
+  noBtn.addEventListener('click', moveNoButton);
+
+  yesBtn.addEventListener('click', () => {
+    message.style.display = 'block';
+    pianoSound.play();
+    image.src = "2.png";
+
+    if (!heartInterval) {
+      heartInterval = setInterval(createHeart, 500);
+    }
+  });
+
+  function createHeart() {
+    const heart = document.createElement('span');
+    heart.classList.add('heart-emoji');
+    heart.textContent = '❤️';
+    heart.style.left = Math.random() * window.innerWidth + 'px';
+    heart.style.top = window.innerHeight + 'px';
+    document.body.appendChild(heart);
+    setTimeout(() => heart.remove(), 5000);
+  }
+
+  yesBtn.addEventListener('click', () => {
+  message.style.display = 'block';
+  pianoSound.play();
+  image.src = "2.png";
+
+  // Make the No button vanish smoothly
+  noBtn.style.transition = "all 0.5s ease";
+  noBtn.style.opacity = "0";
+  noBtn.style.transform = "scale(0)";
+  setTimeout(() => noBtn.style.display = "none", 500); // fully remove after animation
+
+  // Start continuous floating hearts
+  if (!heartInterval) {
+    heartInterval = setInterval(createHeart, 500);
+  }
+});
+
+</script>
+
+
+</body>
+</html>

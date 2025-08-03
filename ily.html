@@ -182,90 +182,101 @@
 
   <audio id="piano" src="blue-piano.mp3"></audio>
 
-<script>
-  const noBtn = document.getElementById('noBtn');
-  const yesBtn = document.getElementById('yesBtn');
-  const message = document.querySelector('.message');
-  const pianoSound = document.getElementById('piano');
-  const image = document.getElementById('switchImage');
-  const container = document.getElementById('container');
+  <script>
+    const noBtn = document.getElementById('noBtn');
+    const yesBtn = document.getElementById('yesBtn');
+    const message = document.querySelector('.message');
+    const pianoSound = document.getElementById('piano');
+    const image = document.getElementById('switchImage');
+    const container = document.getElementById('container');
 
-  let chasing = false;
-  let timeout = null;
-  let heartInterval = null;
+    let chasing = false;
+    let timeout = null;
+    let heartInterval = null;
 
-  function moveNoButton() {
-    const btnWidth = noBtn.offsetWidth;
-    const btnHeight = noBtn.offsetHeight;
-    const maxX = container.clientWidth - btnWidth;
-    const maxY = container.clientHeight - btnHeight;
+    function moveNoButton() {
+      const btnWidth = noBtn.offsetWidth;
+      const btnHeight = noBtn.offsetHeight;
+      const maxX = container.clientWidth - btnWidth;
+      const maxY = container.clientHeight - btnHeight;
 
-    noBtn.classList.remove("shake");
-    noBtn.style.position = "absolute";
-    noBtn.style.transition = "left 0.15s linear, top 0.15s linear";
-    noBtn.style.left = Math.random() * maxX + "px";
-    noBtn.style.top = Math.random() * maxY + "px";
-  }
-
-  function returnToInitial() {
-    noBtn.style.transition = "all 0.2s ease";
-    noBtn.style.position = "relative";
-    noBtn.style.left = "0px";
-    noBtn.style.top = "0px";
-    noBtn.classList.remove("shake");
-  }
-
-  document.addEventListener('mousemove', (e) => {
-    const rect = noBtn.getBoundingClientRect();
-    const mouseX = e.clientX;
-    const mouseY = e.clientY;
-    const buttonX = rect.left + rect.width / 2;
-    const buttonY = rect.top + rect.height / 2;
-
-    const distance = Math.hypot(buttonX - mouseX, buttonY - mouseY);
-
-    if (distance < 150) {
-      chasing = true;
-      noBtn.classList.add("shake");
-      setTimeout(() => { if (chasing) moveNoButton(); }, 200);
-      if (timeout) clearTimeout(timeout);
-    } else if (chasing) {
-      clearTimeout(timeout);
-      timeout = setTimeout(() => {
-        chasing = false;
-        returnToInitial();
-      }, 300);
+      noBtn.classList.remove("shake");
+      noBtn.style.position = "absolute";
+      noBtn.style.transition = "left 0.15s linear, top 0.15s linear";
+      noBtn.style.left = Math.random() * maxX + "px";
+      noBtn.style.top = Math.random() * maxY + "px";
     }
-  });
 
-  noBtn.addEventListener('mouseover', moveNoButton);
-  noBtn.addEventListener('click', moveNoButton);
-
-  yesBtn.addEventListener('click', () => {
-    message.style.display = 'block';
-    pianoSound.play();
-    image.src = "2.png";
-
-    noBtn.style.transition = "all 0.5s ease";
-    noBtn.style.opacity = "0";
-    noBtn.style.transform = "scale(0)";
-    setTimeout(() => noBtn.style.display = "none", 500);
-
-    if (!heartInterval) {
-      heartInterval = setInterval(createHeart, 500);
+    function returnToInitial() {
+      noBtn.style.transition = "all 0.2s ease";
+      noBtn.style.position = "relative";
+      noBtn.style.left = "0px";
+      noBtn.style.top = "0px";
+      noBtn.classList.remove("shake");
     }
-  });
 
-  function createHeart() {
-    const heart = document.createElement('span');
-    heart.classList.add('heart-emoji');
-    heart.textContent = '❤️';
-    heart.style.left = Math.random() * window.innerWidth + 'px';
-    heart.style.top = window.innerHeight + 'px';
-    document.body.appendChild(heart);
-    setTimeout(() => heart.remove(), 5000);
-  }
-</script>
+    // Desktop behavior: mouse proximity
+    document.addEventListener('mousemove', (e) => {
+      const rect = noBtn.getBoundingClientRect();
+      const mouseX = e.clientX;
+      const mouseY = e.clientY;
+      const buttonX = rect.left + rect.width / 2;
+      const buttonY = rect.top + rect.height / 2;
+
+      const distance = Math.hypot(buttonX - mouseX, buttonY - mouseY);
+
+      if (distance < 150) {
+        chasing = true;
+        noBtn.classList.add("shake");
+        setTimeout(() => { if (chasing) moveNoButton(); }, 200);
+        if (timeout) clearTimeout(timeout);
+      } else if (chasing) {
+        clearTimeout(timeout);
+        timeout = setTimeout(() => {
+          chasing = false;
+          returnToInitial();
+        }, 300);
+      }
+    });
+
+    // Mobile fallback: reset position after inactivity
+    let mobileResetTimeout = setTimeout(returnToInitial, 5000);
+    ['touchstart', 'touchmove'].forEach(evt => {
+      document.addEventListener(evt, () => {
+        clearTimeout(mobileResetTimeout);
+        mobileResetTimeout = setTimeout(returnToInitial, 5000);
+      });
+    });
+
+    noBtn.addEventListener('mouseover', moveNoButton);
+    noBtn.addEventListener('click', moveNoButton);
+
+    yesBtn.addEventListener('click', () => {
+      message.style.display = 'block';
+      pianoSound.play();
+      image.src = "2.png";
+
+      returnToInitial();
+      noBtn.style.transition = "all 0.5s ease";
+      noBtn.style.opacity = "0";
+      noBtn.style.transform = "scale(0)";
+      setTimeout(() => noBtn.style.display = "none", 500);
+
+      if (!heartInterval) {
+        heartInterval = setInterval(createHeart, 500);
+      }
+    });
+
+    function createHeart() {
+      const heart = document.createElement('span');
+      heart.classList.add('heart-emoji');
+      heart.textContent = '❤️';
+      heart.style.left = Math.random() * window.innerWidth + 'px';
+      heart.style.top = window.innerHeight + 'px';
+      document.body.appendChild(heart);
+      setTimeout(() => heart.remove(), 5000);
+    }
+  </script>
 
 </body>
 </html>
